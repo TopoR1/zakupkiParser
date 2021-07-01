@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>ZakupkiParser</title>
+    <%- include('head') -%>
+</head>
+
+<body>
+    <div id="content" class="set-scale">
+        <div class="panels">
+            <div class="top">
+                <div class="logo"></div>
+                <div class="right">
+                    <button class="topor-btn logout">
+                        <span class="text">Выйти</span>
+                    </button>
+                </div>
+            </div>
+            <div class="right">
+                <div class="menu">
+                    <div class="menu"></div>
+                </div>
+                <div class="items">
+                    <div class="item <%= type == 'track' && 'active' || '' %>">
+                        <div class="track"></div>
+                        <div class="title">Отслеживания</div>
+                    </div>
+                    <div class="item <%= type == 'notices' && 'active' || '' %>">
+                        <div class="notices">
+                            <% countN = user.notices.filter(item => !item.checked).length %>
+                            <% if (countN > 0) { %><div class="count"><%= countN %></div><% } %>
+                        </div>
+                        <div class="title">Уведомления</div>
+                    </div>
+                    <div class="item <%= type == 'history' && 'active' || '' %>">
+                        <div class="history"></div>
+                        <div class="title">История отслеживаний</div>
+                    </div>
+                    <div class="item <%= type == 'settings' && 'active' || '' %>">
+                        <div class="settings"></div>
+                        <div class="title">Настройки</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% if (type == 'notices') { %>
+        <div class="content <%= type %>">
+            <div class="title">Уведомления</div>
+            <div class="notices scrollbar">
+                <% user?.notices.forEach(item => { %>
+                <div class="item">
+                    <div class="title"><%- item.title %></div>
+                    <% if (!item.checked) { %><div class="check"></div><% } %>
+                    <div class="descript"><%- item.descript %></div>
+                    <% dated = new Date(item.time); %>
+                    <div class="date"><%= dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString() %></div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+        <% } else if (type == 'track') { %>
+        <div class="content <%= type %>">
+            <div class="title">Отслеживание закупок</div>
+            <div class="tracks scrollbar">
+                <div class="item create">
+                    <div class="plus">+</div>
+                    <div class="title">Создать отслеживание закупок</div>
+                </div>
+                <% tracks.forEach(item => { %>
+                <div class="item <%= item.id %>">
+                    <div class="name"><%= item.name %></div>
+                    <div class="url">Ссылка на поиск: <a style="text-decoration: none;" href="<%= item.url %>">нажмите сюда</a></div>
+                    <div class="search_new">Найдено новых: <span class="number"><%= item.new %></span></div>
+                    <div class="num">Количество найденных участников: <span class="number"><%= item.members.val.length %></span></div>
+                    <div class="status">Статус сбора данных: <span class="number"><%= item.members.type == 'wait_start' && !item.members.enable && 'отключён' || item.members.type == 'wait_start' && 'ожидание старта сбора' || item.members.type == 'started' && 'идёт сбор данных' || 'выполнен' %></span></div>
+                    <% dated = new Date(item.time.create); %>
+                    <div class="create">Дата создания: <%= dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString() %></div>
+                    <% dated = new Date(item.time.change); %>
+                    <div class="change">Дата изменения: <%= dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString() %></div>
+                    <div class="btns">
+                        <button class="topor-btn info">
+                            <span class="text">Подробнее</span>
+                        </button>
+                        <button class="topor-btn stop">
+                            <span class="text">Остановить</span>
+                        </button>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+        <% } else if (type == 'create') { %>
+        <div class="content <%= type %>">
+            <div class="title">Создание отслеживания закупок</div>
+            <div class="create">
+                <div class="info">*Дайте такое имя, чтобы было легче понять, какие именно закупки отслеживаются</div>
+                <div class="topor-input">
+                    <input class="name" required="" value="" type="text">
+                    <label alt="Дайте имя отслеживанию закупок" placeholder="Дайте имя отслеживанию закупок"></label>
+                </div>
+                <div class="info">*Вставляйте ссылку только на поиск закупок из адресной строки портала <a href="https://zakupki.gov.ru">Госзакупки</a>!</div>
+                <div class="topor-input">
+                    <input class="url" required="" value="" type="text">
+                    <label alt="Ссылка на поиск из портала Госзакупки" placeholder="Ссылка на поиск из портала Госзакупки"></label>
+                </div>
+                <div class="answer">Собирать данные участников в подобных закупах и проводить анализ участников?</div>
+                <ul class="checkbox">
+                    <li>
+                        <input id="getData" type="radio" name="radio" value="">
+                        <label for="getData">Собирать и проводить анализ</label>
+                    </li>
+                    <li>
+                        <input id="noGetData" type="radio" name="radio" value="" checked>
+                        <label for="noGetData">Не собирать и не проводить анализ</label>
+                    </li>
+                </ul>
+                <div class="answer">Куда уведомлять о новых закупках?</div>
+                <div class="cbx-inline">
+                    <input class="inp-cbx" id="notice_site" type="checkbox" style="display: none">
+                    <label class="cbx" for="notice_site">
+                        <span><svg width="12px" height="10px" viewBox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                        <span style="font-size: 14px;">Уведомлять на сайте</span>
+                    </label>
+                    <input class="inp-cbx" id="notice_email" type="checkbox" style="display: none">
+                    <label class="cbx" for="notice_email">
+                        <span><svg width="12px" height="10px" viewBox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                        <span style="font-size: 14px;">Уведомлять на электронную почту</span>
+                    </label>
+                    <!--<input class="inp-cbx" id="notice_tgm" type="checkbox" style="display: none">
+                    <label class="cbx" for="notice_tgm">
+                        <span><svg width="12px" height="10px" viewBox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                        <span style="font-size: 14px;">Уведомлять на Telegram</span>
+                    </label>-->
+                </div>
+                <div class="answer">Период уведомления о новых закупках:
+                    <label class="select" for="timeNotice">
+                        <select id="timeNotice" required="required">
+                            <option value="moment">Моментально</option>
+                            <option value="900">Каждые 15 минут</option>
+                            <option value="1800">Каждые 30 минут</option>
+                            <option value="3600" selected>Каждый час</option>
+                            <option value="7200">Каждые 2 часа</option>
+                            <option value="14400">Каждые 4 часа</option>
+                            <option value="21600">Каждые 6 часов</option>
+                            <option value="28800">Каждые 8 часов</option>
+                            <option value="43200">Каждые 12 часов</option>
+                            <option value="64800">Каждые 18 часов</option>
+                            <option value="86400">Каждые 24 часа</option>
+                        </select>
+                        <svg>
+                            <use xlink:href="#select-arrow-down"></use>
+                        </svg>
+                    </label>
+                    <div class="info" style="color: #898989;margin-bottom: 10px;font-weight: 400; margin-top: 5px;">*Уведомления по Email приходят с интервалом не менее 30 минут. Если выбрано меньше, письмо с уведомлением будет приходить каждые 30 минут. Если выбрано больше, то будет приходить согласно выбранному пункту.</div>
+                </div>
+                <!-- SVG Sprites-->
+                <svg class="sprites">
+                  <symbol id="select-arrow-down" viewbox="0 0 10 6">
+                    <polyline points="1 1 5 5 9 1"></polyline>
+                  </symbol>
+                </svg>
+                <button class="topor-btn create">
+                    <span class="text">Создать</span>
+                </button>
+            </div>
+        </div>
+        <% } else if (type == 'info') { %>
+        <div class="content <%= type %>">
+            <div class="title"><%= track.name %></div>
+            <div class="info">
+                <div class="item">
+                    <div class="left">Статус: </div>
+                    <div class="right"><%= track.start && 'Отслеживается' || 'Отключено' %></div>
+                </div>
+                <div class="item">
+                    <div class="left">Ссылка на поиск: </div>
+                    <div class="right"><a style="text-decoration: none;" href="<%= track.url %>">нажмите сюда</a></div></div>
+                <div class="item">
+                    <div class="left">Найдено новых закупок: </div>
+                    <div class="right"><%= track.new %></div>
+                </div>
+                <div class="item">
+                    <div class="left">Сбор данных об участниках закупки: </div>
+                    <div class="right"><%= track.members.enable && 'Да' || 'Нет' %></div>
+                </div>
+                <div class="item">
+                    <div class="left">Статус сбора данных: </div>
+                    <div class="right"><%= track.members.type == 'wait_start' && !track.members.enable && 'отключён' || track.members.type == 'wait_start' && 'ожидание старта сбора' || track.members.type == 'started' && 'идёт сбор данных' || 'выполнен' %>
+                        <% if (track.members.enable || track.members.type == 'end') { %>
+                        <button id="<%= track.id %>" class="topor-btn export" <%= track.members.type != 'end' && 'disabled' || '' %> >
+                            <span class="text">Экспорт в Excel</span>
+                        </button>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="left">Уведомления через: </div>
+                    <div class="right"><%= track.notice.site && 'Сайт' || '' %> <%= track.notice.email && 'Email' %></div>
+                </div>
+                <div class="item">
+                    <div class="left">Дата создания: </div>
+                    <% dated = new Date(track.time.create); %>
+                    <div class="right"><%= dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString() %></div>
+                </div>
+                <div class="item">
+                    <div class="left">Дата изменения: </div>
+                    <% dated = new Date(track.time.change); %>
+                    <div class="right"><%= dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString() %></div>
+                </div>
+            </div>
+        </div>
+        <% } else if (type == 'history') { %>
+        <div class="content <%= type %>">
+            <div class="title">История отслеживаний закупок</div>
+            <% if (tracks.length > 0) { %>
+            <div class="tracks scrollbar">
+                <% tracks.forEach(item => { %>
+                <div class="item <%= item.id %>">
+                    <div class="name"><%= item.name %></div>
+                    <div class="url">Ссылка на поиск: <a style="text-decoration: none;" href="<%= item.url %>">нажмите сюда</a></div>
+                    <div class="search_new">Найдено новых: <span class="number"><%= item.new %></span></div>
+                    <div class="num">Количество найденных участников: <span class="number"><%= item.members.val.length %></span></div>
+                    <div class="status">Статус сбора данных: <span class="number"><%= item.members.type == 'wait_start' && !item.members.enable && 'отключён' || item.members.type == 'wait_start' && 'ожидание' || item.members.type == 'started' && 'идёт сбор данных' || 'выполнен' %></span></div>
+                    <% dated = new Date(item.time.create); %>
+                    <div class="create">Дата создания: <%= dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString() %></div>
+                    <% dated = new Date(item.time.change); %>
+                    <div class="change">Дата изменения: <%= dated.toLocaleDateString() + ' ' + dated.toLocaleTimeString() %></div>
+                    <div class="btns">
+                        <button class="topor-btn start">
+                            <span class="text">Запустить</span>
+                        </button>
+                        <button class="topor-btn delete">
+                            <span class="text">Удалить</span>
+                        </button>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% } else { %>
+            <div class="empty">Раздел пустой</div>
+            <% } %>
+        </div>
+        <% } else if (type == 'settings') { %>
+        <div class="content <%= type %>">
+            <div class="title">Настройки</div>
+            <div class="settings scrollbar">
+                <div class="topor-input">
+                    <input class="name" required="" value="<%= user.name %>" type="text">
+                    <label alt="Имя" placeholder="Имя"></label>
+                </div>
+                <div class="topor-input">
+                    <input class="email" required="" value="<%= user.email %>" type="text" disabled>
+                    <label alt="Email" placeholder="Email"></label>
+                </div>
+                <div class="passwords">
+                    <div class="topor-input old">
+                        <input class="old_pass" required="" value="" type="password">
+                        <label alt="Старый пароль" placeholder="Старый пароль"></label>
+                    </div>
+                    <div class="topor-input new">
+                        <input class="new_pass" required="" value="" type="password">
+                        <label alt="Новый пароль" placeholder="Новый пароль"></label>
+                    </div>
+                </div>
+                <input class="inp-cbx" id="news" type="checkbox" style="display: none" <%= user.sendNews == 'true' && 'checked' || '' %>>
+                <label class="cbx" for="news">
+                    <span><svg width="12px" height="10px" viewBox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                    <span style="font-size: 14px;">Получать новости и предложения на почту</span>
+                </label>
+                <button class="topor-btn save">
+                    <span class="text">Сохранить</span>
+                </button>
+            </div>
+        </div>
+        <% } %>
+        <%- include('recaptcha') -%>
+    </div>
+</body>
+
+</html>

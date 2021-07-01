@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>ZakupkiParser</title>
+
+    <%- include('head') -%>
+</head>
+
+<body>
+    <div id="content" class="set-scale">
+        <%- include('recaptcha') -%>
+        <% if (type == 'auth' || form == 'auth') { %>
+        <div class="sign auth" style="<%= showEmail ? 'display: none;' : '' %>">
+            <div class="content">
+                <div class="logo"></div>
+                <div class="title">Приветствую!</div>
+                <div class="descript">Авторизуйтесь, чтобы начать работу</div>
+                <div class="topor-input">
+                    <input class="login" required="" value="" type="text">
+                    <label alt="Email или Имя" placeholder="Email или Имя"></label>
+                </div>
+                <div class="topor-input">
+                    <input class="password" required="" value="" type="password">
+                    <label alt="Пароль" placeholder="Пароль"></label>
+                </div>
+                <div id="recaptcha"></div>
+                <button class="topor-btn auth">
+                    <span class="text">Войти</span>
+                </button>
+                <hr>
+                <div class="actions">
+                    <div class="signup">Создать новый аккаунт</div>
+                    <div class="forgot">Забыли пароль?</div>
+                </div>
+            </div>
+        </div>
+        <% } else if (type == 'signup' || form == 'signup') { %>
+        <div class="sign signup" style="<%= showEmail ? 'display: none;' : '' %>">
+            <div class="content">
+                <div class="logo"></div>
+                <div class="title">Ух ты, новые люди!</div>
+                <div class="descript">Зарегистрируйся и стань частью нашей команды</div>
+                <div class="topor-input">
+                    <input class="email" required="" value="" type="text">
+                    <label alt="Email" placeholder="Email"></label>
+                </div>
+                
+                <div class="topor-input">
+                    <input class="name" required="" value="" type="text">
+                    <label alt="Имя" placeholder="Имя"></label>
+                </div>
+                <div class="topor-input">
+                    <input class="password" required="" value="" type="password">
+                    <label alt="Пароль" placeholder="Пароль"></label>
+                </div>
+                
+                <input class="inp-cbx" id="policy" type="checkbox" style="display: none"/>
+                <label class="cbx" for="policy">
+                    <span><svg width="12px" height="10px" viewbox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                    <span>Подтверждаю ознакомление и согласие с <a>Условиями использования</a> и <a>Политикой конфиденциальности</a> данного сайта.</span>
+                </label>
+                
+                <input class="inp-cbx" id="news" type="checkbox" style="display: none"/>
+                <label class="cbx" for="news">
+                    <span><svg width="12px" height="10px" viewbox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                    <span>Получать новости и предложения на почту</span>
+                </label>
+                <button class="topor-btn up">
+                    <span class="text">Зарегистрироваться</span>
+                 </button>
+                <hr>
+                <div class="actions">
+                    <div class="auth">Уже есть аккаунт</div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+        <% if (type == 'fa_email') { %>
+        <div class="sign fa_email" style="<%= showEmail ? '' : 'display: none;' %>" key="<%= key %>" type="<%= form %>">
+            <div class="content">
+                <div class="logo"></div>
+                <div class="title">Подтверди почту!</div>
+                <div class="descript">Это нужно для верификации аккаунта</div>
+                <div class="topor-input">
+                    <input class="key" required="" value="" type="text">
+                    <label alt="Код подтверждения" placeholder="Код подтверждения"></label>
+                </div>
+                <button class="topor-btn fa_email">
+                    <span class="text">Подтвердить почту</span>
+                </button>
+                <hr>
+                <div class="actions">
+                    <div class="back">Вернуться обратно</div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+        <% if (type == 'forgot') { %>
+        <div class="sign forgot">
+            <div class="content">
+                <div class="logo"></div>
+                <div class="title">Восстановление пароля!</div>
+                <div class="descript">Не приятно, но я тебе помогу его восстановить</div>
+                <div class="topor-input">
+                    <input class="login" required="" value="" type="text">
+                    <label alt="Email или Имя" placeholder="Email или Имя"></label>
+                </div>
+                <div class="topor-input">
+                    <input class="password" required="" value="" type="password">
+                    <label alt="Новый пароль" placeholder="Новый пароль"></label>
+                </div>
+                <button class="topor-btn forgot"><span class="text">Восстановить пароль</span></button>
+                <hr>
+                <div class="actions">
+                    <div class="auth">Вернутся обратно</div>
+                </div>
+            </div>
+        </div>
+        <% } else if (type == '2fa-google') { %>
+        <div class="sign 2fa-google">
+            <div class="content">
+                <div class="logo"></div>
+                <div class="title">Google Authenticator</div>
+                <div class="descript">Введите код из приложения</div>
+                <div class="topor-input">
+                    <input required="" value="" type="text">
+                    <label alt="Код подтверждения" placeholder="Код подтверждения"></label>
+                </div>
+                <button class="topor-btn fa_email">Отправить код</button>
+                <hr>
+                <div class="actions">
+                    <div class="auth">Вернуться обратно</div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</body>
+
+</html>
